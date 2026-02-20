@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mini Widget Gare - ASD Moricone Volley</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Font più leggibile -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --mv-blue:#292E6E;
+      --mv-green:#47A52B;
+      --mv-green-soft:#e6f5e9;
+      --mv-acsi:#1f6feb;
+      --mv-dark:#0f172a;
+      --mv-gray:#64748b;
+
+      --mv-border: rgba(15,23,42,0.10);
+      --mv-shadow: 0 14px 34px rgba(2,6,23,0.10);
+      --mv-shadow-soft: 0 8px 18px rgba(2,6,23,0.06);
+      --mv-radius: 18px;
+      --mv-surface: #fbfcfe;
+
+      --cat-u12:   #47A52B;
+      --cat-u13:   #292E6E;
+      --cat-u14:   #1f6feb;
+      --cat-u16:   #f59e0b;
+      --cat-misto: #ec4899;
+    }
+
+    *{ box-sizing:border-box;margin:0;padding:0;
+      font-family:"Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
+    body{background:transparent;padding:0;}
+
+    .mv-mini{
+      max-width:920px;
+      margin:0 auto;
+      background:linear-gradient(180deg, #fff 0%, #fff 65%, #fafafa 100%);
+      border:1px solid var(--mv-border);
+      border-radius:var(--mv-radius);
+      box-shadow:var(--mv-shadow);
+      overflow:hidden;
+    }
+
+    .mv-top{
+      padding:14px 14px 12px;
+      border-top:4px solid var(--mv-green);
+      background:
+        radial-gradient(700px 220px at 15% 0%, rgba(71,165,43,0.14), transparent 60%),
+        radial-gradient(700px 220px at 85% 0%, rgba(41,46,110,0.12), transparent 55%),
+        linear-gradient(135deg, rgba(2,6,23,0.02), transparent 55%);
+      display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    }
+
+    .mv-mini-logo{
+      height:42px;width:auto;object-fit:contain;display:block;
+      filter: drop-shadow(0 2px 8px rgba(2,6,23,0.08));
+    }
+
+    .mv-title-block{flex:1;min-width:240px;}
+    .mv-title{
+      font-size:16px;
+      font-weight:800;
+      letter-spacing:0.04em;
+      text-transform:uppercase;
+      color:var(--mv-dark);
+      line-height:1.1;
+    }
+    .mv-subtitle{
+      margin-top:5px;
+      font-size:13px;
+      color:var(--mv-gray);
+      font-weight:600;
+    }
+
+    .mv-badges{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+    .mv-badge{
+      font-size:11px;
+      font-weight:800;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(15,23,42,0.10);
+      background:#fff;
+      color:var(--mv-dark);
+      white-space:nowrap;
+      box-shadow:0 6px 14px rgba(2,6,23,0.06);
+    }
+    .mv-badge.season{
+      border-color: rgba(71,165,43,0.22);
+      background: rgba(71,165,43,0.10);
+      color: var(--mv-green);
+    }
+    .mv-badge.mode{
+      border-color: rgba(41,46,110,0.18);
+      background: rgba(41,46,110,0.10);
+      color: var(--mv-blue);
+    }
+
+    .mv-content{padding:12px 14px 14px;}
+    .mv-list{display:flex;flex-direction:column;gap:12px;}
+
+    .mv-row{
+      --accent: #64748b;
+      --accentSoft: rgba(100,116,139,0.12);
+      display:grid;
+      grid-template-columns: 175px 1fr 260px;
+      border:1px solid rgba(15,23,42,0.10);
+      border-radius:18px;
+      overflow:hidden;
+      background:
+        radial-gradient(520px 160px at 0% 0%, var(--accentSoft), transparent 60%),
+        linear-gradient(180deg, #fff, var(--mv-surface));
+      box-shadow:var(--mv-shadow-soft);
+      position:relative;
+      transform: translateZ(0);
+    }
+
+    .mv-row::before{
+      content:"";
+      position:absolute;left:0;top:0;bottom:0;width:6px;
+      background:linear-gradient(180deg, var(--accent), rgba(2,6,23,0.18));
+      opacity:0.95;
+    }
+    .mv-row.fipav{ --accent: var(--mv-green); --accentSoft: rgba(71,165,43,0.16); }
+    .mv-row.acsi { --accent: var(--mv-acsi);  --accentSoft: rgba(31,111,235,0.14); }
+    .mv-row.other{ --accent: var(--mv-blue);  --accentSoft: rgba(41,46,110,0.14); }
+
+    .mv-when{
+      padding:12px 12px 12px 16px;
+      border-right:1px solid rgba(15,23,42,0.06);
+      display:flex;flex-direction:column;justify-content:center;gap:8px;
+    }
+    .mv-date{
+      font-size:14px;
+      font-weight:800;
+      color:var(--mv-dark);
+      text-transform:capitalize;
+      line-height:1.15;
+    }
+    .mv-hour{
+      display:inline-flex;align-items:center;gap:8px;
+      font-size:12px;font-weight:700;color:var(--mv-dark);
+    }
+    .mv-hour .pill{
+      font-size:13px;
+      font-weight:700;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(15,23,42,0.10);
+      background:#fff;
+      box-shadow:0 6px 14px rgba(2,6,23,0.06);
+      white-space:nowrap;
+    }
+
+    .mv-match{
+      padding:12px 14px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:10px;
+    }
+
+    .mv-chip{
+      display:inline-flex;align-items:center;gap:8px;
+      align-self:flex-start;
+      font-size:11px;font-weight:800;text-transform:uppercase;
+      padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(15,23,42,0.10);
+      background:#fff;
+      box-shadow:0 6px 14px rgba(2,6,23,0.06);
+      color:var(--mv-dark);
+      max-width:100%;
+    }
+    .mv-chip .dot{
+      width:10px;height:10px;border-radius:999px;
+      background: var(--cat-color, var(--mv-gray));
+      box-shadow:0 0 0 4px rgba(255,255,255,0.92);
+      flex:0 0 auto;
+    }
+    .mv-chip .txt{
+      overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+      max-width:560px;
+      letter-spacing:0.02em;
+    }
+
+    .mv-src-badge{
+      font-size:10px;font-weight:800;letter-spacing:0.06em;
+      padding:4px 8px;border-radius:999px;
+      border:1px solid rgba(15,23,42,0.10);
+      background:rgba(2,6,23,0.04);
+      color:var(--mv-dark);
+      white-space:nowrap;
+      flex:0 0 auto;
+    }
+    .mv-src-badge.u12{   background: rgba(71,165,43,0.12);  border-color: rgba(71,165,43,0.22);  color: #1b6e2c; }
+    .mv-src-badge.u13{   background: rgba(41,46,110,0.10);  border-color: rgba(41,46,110,0.22);  color: var(--mv-blue); }
+    .mv-src-badge.u14{   background: rgba(31,111,235,0.10); border-color: rgba(31,111,235,0.22); color: var(--mv-acsi); }
+    .mv-src-badge.u16{   background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.28); color: #9a5a00; }
+    .mv-src-badge.misto{ background: rgba(236,72,153,0.10); border-color: rgba(236,72,153,0.22); color: #b2165b; }
+
+    .mv-vs{
+      display:grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap:10px;align-items:center;
+      padding:12px;border-radius:16px;
+      border:1px solid rgba(15,23,42,0.10);
+      background:rgba(2,6,23,0.02);
+    }
+    .mv-team{
+      font-size:14px;font-weight:800;color:var(--mv-dark);
+      line-height:1.15;word-break:break-word;
+    }
+    .mv-team.away{ text-align:right;color:var(--mv-gray);font-weight:700; }
+    .mv-vs-badge{
+      font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;
+      padding:8px 12px;border-radius:999px;background:#fff;
+      border:2px solid rgba(15,23,42,0.12);
+      box-shadow:0 6px 14px rgba(2,6,23,0.06);
+      color:var(--mv-blue);white-space:nowrap;
+    }
+
+    .mv-where{
+      padding:12px 12px;border-left:1px solid rgba(15,23,42,0.06);
+      display:flex;flex-direction:column;justify-content:center;gap:8px;
+    }
+    .mv-where .label{
+      font-size:10px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;
+      color:var(--mv-gray);
+    }
+    .mv-where .place{
+      font-size:13px;font-weight:800;color:var(--mv-dark);line-height:1.25;
+    }
+    .mv-where .facility{
+      font-size:13px;font-weight:600;color:var(--mv-gray);line-height:1.25;
+    }
+
+    .mv-mini-empty{ font-size:13px;color:var(--mv-gray);padding:6px 2px;font-weight:600; }
+
+    .mv-footer{
+      display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;
+      padding:12px 14px 14px;
+      border-top:1px solid rgba(15,23,42,0.06);
+      background:linear-gradient(180deg,#fff,#fafafa);
+    }
+    .mv-note{font-size:11px;color:var(--mv-gray);font-weight:600;}
+    .mv-cta{
+      font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;
+      color:#fff;background:linear-gradient(135deg, var(--mv-green), #3f9e28);
+      padding:10px 16px;border-radius:999px;text-decoration:none;
+      display:inline-flex;align-items:center;gap:8px;
+      box-shadow:0 10px 22px rgba(71,165,43,0.24);
+    }
+    .mv-cta:active{transform:translateY(1px);}
+
+    @media (max-width:900px){
+      .mv-row{ grid-template-columns: 175px 1fr; }
+      .mv-where{
+        grid-column: 1 / -1;
+        border-left:none;
+        border-top:1px solid rgba(15,23,42,0.06);
+      }
+      .mv-chip .txt{ max-width:420px; }
+    }
+    @media (max-width:480px){
+      .mv-top{padding:12px 12px 10px;}
+      .mv-content{padding:10px 12px 12px;}
+      .mv-footer{padding:10px 12px 12px;}
+      .mv-mini-logo{height:38px;}
+      .mv-title{font-size:15px;}
+      .mv-subtitle{font-size:12.5px;}
+      .mv-row{grid-template-columns:1fr;}
+      .mv-when{border-right:none;border-bottom:1px solid rgba(15,23,42,0.06); padding-left:16px;}
+      .mv-team{font-size:13.5px;}
+      .mv-chip .txt{ max-width:250px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="mv-mini" id="mv-mini-root">Caricamento…</div>
+
+  <script>
+    /******** CONFIG ********/
+    const SEASON_LABEL = "2025/26";
+    const CTA_URL = "https://sites.google.com/asdmoriconevolley.it/asd-moriconevolley/calendari-gare";
+
+    const FILE_ID_LOGO = "1hTTGX1lfdH2-2iAx2SebOZamdVXDdg7S";
+    const LOGO_URL_PRIMARY = `https://drive.google.com/thumbnail?id=${FILE_ID_LOGO}&sz=w1000`;
+    const LOGO_URL_FALLBACK = `https://drive.google.com/uc?export=download&id=${FILE_ID_LOGO}`;
+
+    const CSV_SOURCES = [
+      { name:"U13",  url:"https://docs.google.com/spreadsheets/d/1j6_c32pntGVuyFePTZeAgparSLFG-U5jVBKQSHUYgiU/gviz/tq?tqx=out:csv&sheet=U13FPE" },
+      { name:"U14",  url:"https://docs.google.com/spreadsheets/d/1LlUCQtnuIrGK5mCE3FfjxeJdgz70lF-wwLoFobJDn2c/gviz/tq?tqx=out:csv&sheet=U14FPE" },
+      { name:"U16",  url:"https://docs.google.com/spreadsheets/d/18ESeJ3hRkYEGhR8F78vij0Gfpy85Rv1O5AeG_oMOFZo/gviz/tq?tqx=out:csv&sheet=U16FPG" },
+      { name:"U12",  url:"https://docs.google.com/spreadsheets/d/1yrUwvv6gT52ZNOTdpyP6CCvBkjv25hi7ttP3De29Aws/gviz/tq?tqx=out:csv&sheet=U12" },
+      { name:"MISTO",url:"https://docs.google.com/spreadsheets/d/13E5QfQ-ElOv30S7l2rcHIuSTYG-cf6Gsr71EMc36lSA/gviz/tq?tqx=out:csv&sheet=MISTO" }
+    ];
+
+    const FALLBACK_NEXT_N = 5;
+
+    // Se vuoi vedere in console gli orari “strani”, lascia true.
+    // Quando è tutto ok, puoi rimettere false.
+    const DEBUG_TIME_FORMATS = true;
+
+    /******** CSV PARSER ********/
+    function parseCSV(text){
+      const rows=[]; let row=[], cur="", inQuotes=false;
+      for(let i=0;i<text.length;i++){
+        const ch=text[i], next=text[i+1];
+        if(ch === '"'){
+          if(inQuotes && next === '"'){ cur+='"'; i++; }
+          else inQuotes=!inQuotes;
+        } else if(ch===',' && !inQuotes){
+          row.push(cur); cur="";
+        } else if((ch==='\n' || ch==='\r') && !inQuotes){
+          if(cur.length || row.length){ row.push(cur); rows.push(row); }
+          row=[]; cur="";
+          if(ch==='\r' && next==='\n') i++;
+        } else cur+=ch;
+      }
+      if(cur.length || row.length){ row.push(cur); rows.push(row); }
+
+      const headers = (rows.shift() || []).map(h => (h||"").trim());
+      return rows
+        .filter(r => r.some(c => (c||"").trim() !== ""))
+        .map(r => {
+          const obj = {};
+          headers.forEach((h,idx) => obj[h] = (r[idx] ?? "").trim());
+          return obj;
+        });
+    }
+
+    /******** UTILS ********/
+    function norm(s){
+      return (s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();
+    }
+    function getRomeNow(){
+      return new Date(new Date().toLocaleString("en-US",{timeZone:"Europe/Rome"}));
+    }
+
+    // ✅ NORMALIZZA ORARIO: 19.00 / 19,00 / 19 -> 19:00
+    function normalizeTime(t){
+      let x = (t || "").trim();
+      if(!x) return "";
+
+      x = x.replace(",", ":").replace(".", ":");
+
+      if(/^\d{1,2}$/.test(x)) x = x.padStart(2,"0") + ":00";
+
+      const m = x.match(/^(\d{1,2}):(\d{1,2})$/);
+      if(m){
+        const hh = m[1].padStart(2,"0");
+        const mm = m[2].padStart(2,"0");
+        return `${hh}:${mm}`;
+      }
+
+      const m2 = x.match(/^(\d{1,2}):(\d{2}):(\d{2})$/);
+      if(m2) return `${m2[1].padStart(2,"0")}:${m2[2]}`;
+
+      return x;
+    }
+
+    function safeTime(t){
+      const x = normalizeTime(t);
+      return x || "--:--";
+    }
+
+    function romeDateFromISO(iso){
+      // mezzogiorno per evitare edge di fuso
+      return new Date(iso + "T12:00:00");
+    }
+    function formatISOShort(isoStr){
+      const dt = new Date(isoStr + "T12:00:00");
+      return dt.toLocaleDateString("it-IT",{ weekday:"short", day:"2-digit", month:"short", timeZone:"Europe/Rome" });
+    }
+    function getTournamentType(torneo){
+      const t = (torneo||"").toUpperCase();
+      if(t.includes("ACSI")) return "acsi";
+      if(t.includes("FIPAV")) return "fipav";
+      return "other";
+    }
+
+    function itLongDateToISO(itDateStr){
+      if(!itDateStr) return null;
+      const raw = String(itDateStr).trim();
+      if(!raw) return null;
+
+      if(/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+
+      const short = raw.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2}|\d{4})$/);
+      if(short){
+        const dd = short[1].padStart(2,"0");
+        const mm = short[2].padStart(2,"0");
+        let yyyy = short[3];
+        if(yyyy.length === 2) yyyy = "20" + yyyy;
+        return `${yyyy}-${mm}-${dd}`;
+      }
+
+      const clean = norm(raw).replace(/,/g,"").replace(/\s+/g," ");
+      const parts = clean.split(" ");
+      if(parts.length < 3) return null;
+
+      const monthMap={
+        "gennaio":1,"febbraio":2,"marzo":3,"aprile":4,"maggio":5,"giugno":6,
+        "luglio":7,"agosto":8,"settembre":9,"ottobre":10,"novembre":11,"dicembre":12
+      };
+
+      let mese, giorno, anno;
+      if(monthMap[parts[0]]){
+        mese = parts[0]; giorno = parseInt(parts[1],10); anno = parseInt(parts[2],10);
+      } else if(parts.length >= 4 && monthMap[parts[1]]){
+        mese = parts[1]; giorno = parseInt(parts[2],10); anno = parseInt(parts[3],10);
+      } else return null;
+
+      const mNum = monthMap[mese];
+      if(!mNum || !giorno || !anno) return null;
+      return `${anno}-${String(mNum).padStart(2,"0")}-${String(giorno).padStart(2,"0")}`;
+    }
+
+    // ✅ Settimana DOMENICA → DOMENICA (inclusa)
+    function startOfWeekSundayRome(d){
+      const date = new Date(d);
+      date.setHours(0,0,0,0);
+      date.setDate(date.getDate() - date.getDay());
+      return date;
+    }
+    function endOfWeekNextSundayRome(startSunday){
+      const d = new Date(startSunday);
+      d.setDate(d.getDate() + 7);
+      d.setHours(23,59,59,999);
+      return d;
+    }
+
+    function sourceClass(src){
+      const s = (src||"").toUpperCase();
+      if(s === "U12") return "u12";
+      if(s === "U13") return "u13";
+      if(s === "U14") return "u14";
+      if(s === "U16") return "u16";
+      if(s === "MISTO") return "misto";
+      return "";
+    }
+    function sourceColorVar(src){
+      const s = (src||"").toUpperCase();
+      if(s === "U12") return "var(--cat-u12)";
+      if(s === "U13") return "var(--cat-u13)";
+      if(s === "U14") return "var(--cat-u14)";
+      if(s === "U16") return "var(--cat-u16)";
+      if(s === "MISTO") return "var(--cat-misto)";
+      return "var(--mv-gray)";
+    }
+
+    /******** DATA LOADER (ROBUSTO) ********/
+    async function loadAllMatches(){
+      const all = [];
+
+      for(const src of CSV_SOURCES){
+        try{
+          const url = src.url + "&cachebust=" + Date.now();
+          const res = await fetch(url, { cache: "no-store" });
+
+          if(!res.ok){
+            console.warn(`[${src.name}] fetch failed`, res.status, res.statusText);
+            continue;
+          }
+
+          const text = await res.text();
+          const rows = parseCSV(text);
+
+          let added = 0;
+
+          rows.forEach(r=>{
+            const iso = itLongDateToISO(r["Data"]);
+            if(!iso) return;
+
+            const torneo = r["Torneo"] || "";
+            const type = getTournamentType(torneo);
+
+            const rawOra = r["Ora"] || "";
+            const normOra = normalizeTime(rawOra);
+
+            if(DEBUG_TIME_FORMATS && rawOra.trim() && !/^\d{2}:\d{2}$/.test(normOra)){
+              console.warn(`[TIME FORMAT] ${src.name}:`, rawOra, "=>", normOra, "| data:", iso, "| torneo:", torneo);
+            }
+
+            all.push({
+              source: src.name,
+              torneo,
+              type,
+              dataISO: iso,
+              ora: rawOra, // teniamo l’originale, safeTime lo normalizza in output
+              localita: r["Località"] || r["Localita"] || "",
+              impianto: r["Impianto"] || "",
+              casa: r["Squadra A"] || "",
+              ospite: r["Squadra B"] || ""
+            });
+
+            added++;
+          });
+
+          console.log(`[${src.name}] rows: ${rows.length}, added(valid): ${added}`);
+        }catch(err){
+          console.warn(`[${src.name}] error`, err);
+        }
+      }
+
+      // ✅ SORT SAFE: usa orari normalizzati e gestisce Invalid Date
+      all.sort((a,b)=>{
+        const ha = safeTime(a.ora);
+        const hb = safeTime(b.ora);
+
+        const ta = new Date(a.dataISO + "T" + (ha==="--:--" ? "00:00" : ha));
+        const tb = new Date(b.dataISO + "T" + (hb==="--:--" ? "00:00" : hb));
+
+        const na = Number.isNaN(ta.getTime());
+        const nb = Number.isNaN(tb.getTime());
+
+        if(na && !nb) return 1;
+        if(!na && nb) return -1;
+        if(na && nb) return (a.dataISO || "").localeCompare(b.dataISO || "");
+
+        return ta - tb;
+      });
+
+      window.__ALL = all;
+      return all;
+    }
+
+    function weekWindow(matches){
+      const now = getRomeNow();
+      const startSun = startOfWeekSundayRome(now);
+      const endNextSun = endOfWeekNextSundayRome(startSun);
+
+      const weekMatches = matches.filter(m=>{
+        const d = romeDateFromISO(m.dataISO);
+        return d >= startSun && d <= endNextSun;
+      });
+
+      return { weekMatches, startSun, endSun: endNextSun };
+    }
+
+    function nextNGames(matches, n=5){
+      const now = getRomeNow();
+      const today = new Date(now);
+      today.setHours(0,0,0,0);
+      return matches.filter(m => romeDateFromISO(m.dataISO) >= today).slice(0, n);
+    }
+
+    /******** RENDER ********/
+    function renderMini({matches, titleText, subtitleText, isFallback}){
+      const root = document.getElementById("mv-mini-root");
+      root.innerHTML = "";
+
+      const top = document.createElement("div");
+      top.className = "mv-top";
+
+      const logo = document.createElement("img");
+      logo.className = "mv-mini-logo";
+      logo.src = LOGO_URL_PRIMARY;
+      logo.alt = "Loghi ASD Moricone Volley e Pallavolo Montelibretti";
+      logo.onerror = ()=>{ logo.onerror=null; logo.src = LOGO_URL_FALLBACK; };
+
+      const titleBlock = document.createElement("div");
+      titleBlock.className = "mv-title-block";
+
+      const title = document.createElement("div");
+      title.className = "mv-title";
+      title.textContent = titleText;
+
+      const subtitle = document.createElement("div");
+      subtitle.className = "mv-subtitle";
+      subtitle.textContent = subtitleText;
+
+      titleBlock.appendChild(title);
+      titleBlock.appendChild(subtitle);
+
+      const badges = document.createElement("div");
+      badges.className = "mv-badges";
+
+      const season = document.createElement("div");
+      season.className = "mv-badge season";
+      season.textContent = SEASON_LABEL;
+
+      const mode = document.createElement("div");
+      mode.className = "mv-badge mode";
+      mode.textContent = isFallback ? "Prossime" : "Settimana";
+
+      badges.appendChild(season);
+      badges.appendChild(mode);
+
+      top.appendChild(logo);
+      top.appendChild(titleBlock);
+      top.appendChild(badges);
+      root.appendChild(top);
+
+      const content = document.createElement("div");
+      content.className = "mv-content";
+
+      if(matches.length === 0){
+        const empty = document.createElement("div");
+        empty.className = "mv-mini-empty";
+        empty.textContent = "Nessuna gara in programma al momento.";
+        content.appendChild(empty);
+      } else {
+        const list = document.createElement("div");
+        list.className = "mv-list";
+
+        matches.forEach(m=>{
+          const row = document.createElement("div");
+          row.className = "mv-row " + m.type;
+
+          const when = document.createElement("div");
+          when.className = "mv-when";
+
+          const date = document.createElement("div");
+          date.className = "mv-date";
+          date.textContent = formatISOShort(m.dataISO);
+
+          const hour = document.createElement("div");
+          hour.className = "mv-hour";
+          hour.innerHTML = `<span class="pill">Ore ${safeTime(m.ora)}</span>`;
+
+          when.appendChild(date);
+          when.appendChild(hour);
+
+          const match = document.createElement("div");
+          match.className = "mv-match";
+
+          const chip = document.createElement("div");
+          chip.className = "mv-chip";
+
+          const srcCls = sourceClass(m.source);
+          const catColor = sourceColorVar(m.source);
+          chip.style.setProperty("--cat-color", catColor);
+
+          chip.innerHTML = `
+            <span class="dot"></span>
+            <span class="mv-src-badge ${srcCls}">${(m.source || "").toUpperCase()}</span>
+            <span class="txt">${m.torneo || "Torneo"}</span>
+          `;
+
+          const vs = document.createElement("div");
+          vs.className = "mv-vs";
+          vs.innerHTML = `
+            <div class="mv-team home">${m.casa || "-"}</div>
+            <div class="mv-vs-badge">VS</div>
+            <div class="mv-team away">${m.ospite || "-"}</div>
+          `;
+
+          match.appendChild(chip);
+          match.appendChild(vs);
+
+          const where = document.createElement("div");
+          where.className = "mv-where";
+
+          const label = document.createElement("div");
+          label.className = "label";
+          label.textContent = "Dove";
+
+          const place = document.createElement("div");
+          place.className = "place";
+          place.textContent = m.localita || "-";
+
+          const facility = document.createElement("div");
+          facility.className = "facility";
+          facility.textContent = m.impianto || "";
+
+          where.appendChild(label);
+          where.appendChild(place);
+          if(m.impianto) where.appendChild(facility);
+
+          row.appendChild(when);
+          row.appendChild(match);
+          row.appendChild(where);
+
+          list.appendChild(row);
+        });
+
+        content.appendChild(list);
+      }
+
+      root.appendChild(content);
+
+      const footer = document.createElement("div");
+      footer.className = "mv-footer";
+      footer.innerHTML = `
+        <div class="mv-note">Dati aggiornati automaticamente.</div>
+        <a class="mv-cta" href="${CTA_URL}" target="_blank" rel="noopener">Calendario completo →</a>
+      `;
+      root.appendChild(footer);
+    }
+
+    async function init(){
+      const root = document.getElementById("mv-mini-root");
+      root.textContent = "Caricamento…";
+
+      try{
+        const all = await loadAllMatches();
+        const { weekMatches, startSun, endSun } = weekWindow(all);
+
+        let show = weekMatches;
+        let titleText = `Gare della settimana (${show.length})`;
+        let subtitleText = `${startSun.toLocaleDateString("it-IT")} → ${endSun.toLocaleDateString("it-IT")}`;
+        let isFallback = false;
+
+        if(show.length === 0){
+          show = nextNGames(all, FALLBACK_NEXT_N);
+          titleText = `Prossime gare (${show.length})`;
+          subtitleText = `Da oggi in avanti`;
+          isFallback = true;
+        }
+
+        renderMini({ matches: show, titleText, subtitleText, isFallback });
+      }catch(e){
+        root.textContent = "Errore nel caricamento gare.";
+        console.error(e);
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
